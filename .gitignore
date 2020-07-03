@@ -1,0 +1,10 @@
+*log
+config/mpd/log
+config/mpd/database
+config/mpd/pid
+config/mpd/state
+config/mpd/sticker.sql
+config/nvim/autoload
+config/nvim/plugged
+config/vifm/vifminfo
+tags

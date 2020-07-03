@@ -1,0 +1,30 @@
+#!/bin/sh
+
+export PATH="$PATH:$(du "$HOME/.custom/scripts" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
+export PATH="$PATH:$HOME/.npm/bin"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.custom/lib/
+
+# Default applications
+export BROWSER="firefox"
+export EDITOR="nvim"
+export FILE_CLI="vifm"
+export FILE_GUI="pcmanfm"
+export TERMINAL="alacritty"
+export SCREENLOCK="i3lock -c 000000"
+
+# Disable "screen off after some time idel"
+xset -dpms
+xset s off
+
+# Applications to run
+clipmenud &
+dunst &
+mpd &
+redshift &
+sxhkd &
+unclutter --ignore-scrolling --jitter 5 &
+
+launch_polybar &
+
+# Start graphical server on tty1 if not already running.
+#[ "$(tty)" = "/dev/tty1" ] && ! pgrep -x Xorg >/dev/null && exec startx
