@@ -19,8 +19,6 @@ xset s off
 # Applications to run
 clipmenud &
 dunst &
-mpd &
-redshift &
 sxhkd &
 unclutter --ignore-scrolling --jitter 5 &
 

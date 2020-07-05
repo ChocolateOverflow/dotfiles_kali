@@ -52,8 +52,8 @@ set -o vi
 # Aliases
 
 # Package managers
-alias p="pacman"
-alias sp="sudo pacman"
+alias p="apt"
+alias sp="sudo apt"
 # Edit
 alias e="$EDITOR"
 alias se="sudo $EDITOR"
