@@ -25,17 +25,18 @@ ex ()
 {
   if [ -f $1 ] ; then
     case $1 in
-      *.tar.bz2)   tar xjf $1   ;;
-      *.tar.gz)    tar xzf $1   ;;
-      *.bz2)       bunzip2 $1   ;;
-      *.rar)       unrar x $1     ;;
-      *.gz)        gunzip $1    ;;
-      *.tar)       tar xf $1    ;;
-      *.tbz2)      tar xjf $1   ;;
-      *.tgz)       tar xzf $1   ;;
-      *.zip)       unzip $1     ;;
-      *.Z)         uncompress $1;;
-      *.7z)        7z x $1      ;;
+      *.tar.bz2) 	tar xjf $1;;
+      *.tar.gz) 	tar xzf $1;;
+      *.bz2) 			bunzip2 $1;;
+      *.rar) 			unrar x $1;;
+      *.gz) 			gunzip $1;;
+      *.tar) 			tar xf $1;;
+      *.tbz2) 		tar xjf $1;;
+      *.tgz) 			tar xzf $1;;
+      *.zip) 			unzip $1;;
+      *.Z) 				uncompress $1;;
+      *.7z) 			7z x $1;;
+			*.xz) 			unxz $1;;
       *)           echo "'$1' cannot be extracted via ex()" ;;
     esac
   else
@@ -52,8 +53,8 @@ set -o vi
 # Aliases
 
 # Package managers
-alias p="apt"
-alias sp="sudo apt"
+alias p="pacman"
+alias sp="sudo pacman"
 # Edit
 alias e="$EDITOR"
 alias se="sudo $EDITOR"
@@ -87,13 +88,20 @@ alias m="setsid mpv --no-terminal"
 alias z="setsid zathura"
 alias f="$FILE_CLI"
 alias c="xclip -selection clipboard"
-## Internet
+alias q="exit"
+# Internet
 alias yt="youtube-dl --add-metadata -c" # Download videos
 alias yta="youtube-dl --add-metadata -cx" # Download audio
+# radare2
+alias r2="r2 -i ~/.config/radare2/r2taint.py"
 
 # Disables Ctrl-S which freezes the terminal
 bind -r '\C-s'
 stty -ixon
 
-# Use git tab completion
+#  Bash tab-completion
+. /usr/share/bash-completion/completions/alacritty
+. /usr/share/bash-completion/completions/docker
 . /usr/share/bash-completion/completions/git
+. /usr/share/bash-completion/completions/mpc
+. /usr/share/bash-completion/completions/pip

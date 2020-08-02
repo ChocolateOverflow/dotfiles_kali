@@ -1,11 +1,11 @@
 " <F1>
 " 	(coc) Show definition
-" <F1>
+" <F2>; <space>c*
 " 	coc stuff
 " <F3>
 "		Beaufity/Autoformat
 " <F4>
-"		Toggle info stuff (Tagbar; NERDTree)
+" 	Tagbar
 " <F5>
 "		Run/Compile
 "
@@ -27,12 +27,14 @@ syntax on
 set autoindent
 set breakindent
 set cpoptions+=y
+set cursorcolumn
 set cursorline
 set encoding=utf-8
 set foldmethod=indent
 set foldminlines=1
 set hidden
 set history=100
+set inccommand=nosplit
 set incsearch
 set noexpandtab
 set nofoldenable
@@ -86,15 +88,13 @@ call plug#begin('$HOME/.config/nvim/plugged')
 	Plug 'scrooloose/syntastic'
 	" Formatting
 	Plug 'godlygeek/tabular'
-	Plug 'psf/black', { 'for': 'python', 'branch': 'stable' }
 	Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'h'] }
+	Plug 'psf/black', { 'branch': 'stable', 'for': 'python' }
 	" Autocomplete & Snippets
 	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 	" git
 	Plug 'tpope/vim-fugitive'
 	Plug 'airblade/vim-gitgutter'
-	" External files
-	Plug 'scrooloose/nerdtree'
 	" Building
 	Plug 'tpope/vim-dispatch'
 	" C/C++
@@ -126,6 +126,7 @@ let g:coc_global_extensions = [
 	\ 'coc-markdownlint',
 	\ 'coc-marketplace',
 	\ 'coc-pairs',
+	\ 'coc-prettier',
 	\ 'coc-python',
 	\ 'coc-snippets',
 	\ 'coc-tsserver',
@@ -200,7 +201,7 @@ let g:clang_format#auto_format_on_insert_leave = 0
 " Arduino
 """"""""""""""""""""""""""""""""""""""""
 
-autocmd BufRead,BufNewFile *.ino,*.pde nnoremap <f5> :!arduino-cli compile -u<cr>
+autocmd BufRead,BufNewFile *.ino,*.pde nnoremap <F5> :!arduino-cli compile -u<cr>
 
 
 """"""""""""""""""""""""""""""""""""""""
@@ -213,31 +214,30 @@ autocmd BufRead,BufNewFile *.py let g:syntastic_python_checkers=['mypy']
 """ jedi-vim
 autocmd BufNewFile,BufRead *.py let g:jedi#popup_on_dot = 0
 
-""" python-mode
-"autocmd BufNewFile,BufRead *.py let g:pymode_indent = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_motion = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_virtualenv = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_run = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_run_bind = '<F5>'
-"autocmd BufNewFile,BufRead *.py let g:pymode_breakpoint = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_breakpoint_bind = '<space>b'
-"autocmd BufNewFile,BufRead *.py let g:pymode_lint = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_lint_on_write = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_lint_cwindow = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_lint_signs = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope_regenerate_on_write = 0
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope_completion = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope_complete_on_dot = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope_autoimport = 0
-"autocmd BufNewFile,BufRead *.py let g:pymode_rope_goto_definition_bind = 'gd'
-"autocmd BufNewFile,BufRead *.py let g:pymode_rename_bind = '<C-c>rr'
-"autocmd BufNewFile,BufRead *.py let g:pymode_syntax = 1
-"autocmd BufNewFile,BufRead *.py let g:pymode_syntax_all = 1
+" Indent Python in the Google way.
+" https://github.com/google/styleguide/blob/gh-pages/google_python_style.vim
+setlocal indentexpr=GetGooglePythonIndent(v:lnum)
+let s:maxoff = 50 " maximum number of lines to look backwards.
+function GetGooglePythonIndent(lnum)
+  call cursor(a:lnum, 1)
+  let [par_line, par_col] = searchpairpos('(\|{\|\[', '', ')\|}\|\]', 'bW',
+        \ "line('.') < " . (a:lnum - s:maxoff) . " ? dummy :"
+        \ . " synIDattr(synID(line('.'), col('.'), 1), 'name')"
+        \ . " =~ '\\(Comment\\|String\\)$'")
+  if par_line > 0
+    call cursor(par_line, 1)
+    if par_col != col("$") - 1
+      return par_col
+    endif
+  endif
+  " Delegate the rest to the original function.
+  return GetPythonIndent(a:lnum)
+endfunction
+let pyindent_nested_paren="&sw*2"
+let pyindent_open_paren="&sw*2"
 
-""" Black
+""" Format with yapf
 autocmd FileType python nnoremap <F3> :Black<cr>
-
 
 
 """"""""""""""""""""""""""""""""""""""""
@@ -247,7 +247,8 @@ autocmd FileType python nnoremap <F3> :Black<cr>
 """ json
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
-""" XML
+""" Format
+autocmd FileType html,javascript nnoremap <F5> :Prettier<cr>
 
 " Host files
 autocmd FileType html noremap <F5> :!python2 -m SimpleHTTPServer<cr>
@@ -316,7 +317,7 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <silent><expr> <C-space> coc#refresh()
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
 " position. Coc only does snippet and additional edit on confirm.
@@ -326,15 +327,15 @@ else
 		imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<cr>"
 endif
 
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" Use `[e` and `]e` to navigate diagnostics
+nmap <silent> [e <Plug>(coc-diagnostic-prev)
+nmap <silent> ]e <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <space>gd <Plug>(coc-definition)
+nmap <space>gy <Plug>(coc-type-definition)
+nmap <space>gi <Plug>(coc-implementation)
+nmap <space>gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> <F1> :call <SID>show_documentation()<cr>
@@ -429,6 +430,9 @@ endfunction
 xmap <silent> <leader>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<cr>
 nmap <silent> <leader>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<cr>g@
 
+""" coc-prettier
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+
 """ coc-snippets
 let g:coc_snippet_next = '<c-j>'
 let g:coc_snippet_prev = '<c-k>'
@@ -437,6 +441,9 @@ imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 """ coc-yank
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+
+""" Misc
+nnoremap <space>cs :CocSearch <C-r>=expand("<cword>")<cr><cr>
 
 
 
@@ -467,7 +474,7 @@ highlight QuickScopeSecondary guifg='#5fffff' gui=underline ctermfg=81 cterm=und
 " Tagbar
 """"""""""""""""""""""""""""""""""""""""
 
-nnoremap <F4>t :TagbarToggle<cr>
+nnoremap <F4> :TagbarToggle<cr>
 
 
 
@@ -518,9 +525,7 @@ xmap ag <Plug>(coc-git-chunk-outer)
 " Files
 """"""""""""""""""""""""""""""""""""""""
 
-""" NERD tree
-nnoremap <F4>f :NERDTreeToggle<cr>
-
+"""
 
 
 """"""""""""""""""""""""""""""""""""""""
@@ -531,15 +536,15 @@ nnoremap <F4>f :NERDTreeToggle<cr>
 command! -nargs=0 Reload :source $MYVIMRC
 
 " I accidentlly type Wq a lot
-command! -nargs=0 Wq :wq<cr>
+command! -nargs=0 Wq :wq
 
 " Y yanks to end of line
 noremap Y y$
 
 " ctrl-S now saves file
-nnoremap <c-s> :w<cr>
-inoremap <c-s> <Esc>:w<cr>a
-vnoremap <c-s> <Esc>:w<cr>
+nnoremap <C-s> :w<cr>
+inoremap <C-s> <Esc>:w<cr>a
+vnoremap <C-s> <Esc>:w<cr>
 
 " Reload init.vim
 autocmd BufNewFile,BufRead init.vim noremap <F5> :source ~/.config/nvim/init.vim<cr>
@@ -561,15 +566,27 @@ noremap <A-n> :next<cr>
 inoremap <A-n> <Esc>:next<cr>
 noremap <A-b> :previous<cr>
 inoremap <A-b> <Esc>:previous<cr>
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
 
 " ctrl-q to quit
 nnoremap <A-q> :q<cr>
 inoremap <A-q> <Esc>:q<cr>
 vnoremap <A-q> <Esc>:q<cr>
+nnoremap <A-s-q> :qa<cr>
 
 " <C-y> yanks to system clipboard
 nnoremap <C-y> "+yy
 vnoremap <C-y> "+y
 
 " <++> as a placeholder
-nnoremap <c-space> /<++><cr>ca<
+nnoremap <C-space> /<++><cr>ca<
+
+" Move between errors
+"nnoremap ]e :lnext<cr>
+"nnoremap [e :lprevious<cr>
+
+" :terminal
+tnoremap <C-space> <c-\><c-n>
