@@ -100,8 +100,4 @@ bind -r '\C-s'
 stty -ixon
 
 #  Bash tab-completion
-. /usr/share/bash-completion/completions/alacritty
-. /usr/share/bash-completion/completions/docker
 . /usr/share/bash-completion/completions/git
-. /usr/share/bash-completion/completions/mpc
-. /usr/share/bash-completion/completions/pip
