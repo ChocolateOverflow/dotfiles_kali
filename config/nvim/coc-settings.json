@@ -13,11 +13,12 @@
   "jedi.diagnostics.didChange": true,
   "jedi.diagnostics.didSave": true,
 
-	// coc-markdownling
+	// coc-markdown
 	"markdownlint.config": {
 	"default": true,
   "line_length": false,
 	"MD010": false,
+	"MD040": false,
 	"MD025": false,
 	"MD007": false
 	},

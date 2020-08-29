@@ -6,5 +6,5 @@ config/mpd/state
 config/mpd/sticker.sql
 config/nvim/autoload
 config/nvim/plugged
-config/vifm/vifminfo
+config/vifm/vifminfo*
 tags

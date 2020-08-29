@@ -5,17 +5,23 @@ super + t
 super + i
 	$TERMINAL -e htop
 super + shift + i
-	$TERMINAL -e bmon
+	$TERMINAL -e bashtop
+super + o
+	$TERMINAL -e calcurse
 super + p
 	$TERMINAL -e python
 super + d
 	dmenu_run
+super + shift + d
+	discord
 super + f
 	$TERMINAL -e $FILE_CLI
 super + shift + f
 	$FILE_GUI
 super + v
 	clipmenu
+super + ctrl + v
+	clipdel -d . && notify-send "Nuked clipmenu"
 super + b
 	$BROWSER
 super + shift + b
@@ -31,7 +37,7 @@ super + shift + m
 super + Return
 	$TERMINAL
 super + shift + Return
-	$TERMINAL -e tmux
+	$TERMINAL -e nvim --cmd terminal --cmd "set clipboard=unnamedplus"
 
 ##### bspwm #####
 
@@ -96,7 +102,7 @@ super + ctrl + r
 super + alt + {h,j,k,l}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 super + ctrl + u; {q,w,e,a,s,d,z,x,c}
-	move_floating {1,2,3,4,5,6,7,8,9}
+	move_floating 3 3 {1,2,3,4,5,6,7,8,9}
 
 # Toggle floating
 super + u
@@ -160,7 +166,7 @@ Print
 # cropped screenshot to clipboard
 shift + Print
 	maim -s | xclip -selection clipboard -t image/png && notify-send "Copied screenshot to clipboard"
-# fill screenshot to file
+# full screenshot to file
 ctrl + Print
 	maim "$HOME/Pictures/screenshots/screenshot_$(date '+%y%m%d-%H%M-%S').png" && notify-send "Saved screenshot"
 # cropped screenshot to file

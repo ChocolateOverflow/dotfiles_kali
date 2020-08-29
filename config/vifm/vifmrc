@@ -115,7 +115,7 @@ filextype *.djvu
 " Audio
 filetype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
        \ {Play using mpv}
-       \ setsid mpv %f
+       \ mpv %f
 fileviewer *.mp3 mp3info
 fileviewer *.flac soxi
 
@@ -377,15 +377,8 @@ nnoremap ,w :set wrap!<cr>
 " Quit vifm
 nnoremap <A-q> :q<CR>
 
-" Example of standard two-panel file managers mappings
-nnoremap <f1> :cd ~<CR>
-nnoremap <f2> cw
-nnoremap <f3> :!less %f<cr>
-nnoremap <f4> :edit<cr>
-nnoremap <f5> :copy<cr>
-nnoremap <f6> :move<cr>
-nnoremap <f7> :mkdir<space>
-nnoremap <f8> :delete<cr>
+" git
+noremap ,g :!tig<CR>
 
 " ------------------------------------------------------------------------------
 

@@ -125,6 +125,7 @@ let g:coc_global_extensions = [
 	\ 'coc-html',
 	\ 'coc-markdownlint',
 	\ 'coc-marketplace',
+	\ 'coc-markmap',
 	\ 'coc-pairs',
 	\ 'coc-prettier',
 	\ 'coc-python',
@@ -429,6 +430,9 @@ function! s:cocActionsOpenFromSelected(type) abort
 endfunction
 xmap <silent> <leader>a :<C-u>execute 'CocCommand actions.open ' . visualmode()<cr>
 nmap <silent> <leader>a :<C-u>set operatorfunc=<SID>cocActionsOpenFromSelected<cr>g@
+
+""" coc-markmap
+command! -range=% Markmap CocCommand markmap.create <line1> <line2>
 
 """ coc-prettier
 command! -nargs=0 Prettier :CocCommand prettier.formatFile

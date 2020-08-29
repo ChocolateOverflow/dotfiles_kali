@@ -41,7 +41,7 @@ scrolling:
   multiplier: 3
 
 # Visual Bell
-visual_bell:
+bell:
   animation: Ease
   duration: 10
   color: '0xffffff'

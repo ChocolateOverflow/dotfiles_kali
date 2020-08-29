@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =7
+let g:netrw_dirhist_7='/home/pwn/git/dotfiles/config/sxhkd'
+let g:netrw_dirhist_6='/home/pwn/git/shelf/hdown'
+let g:netrw_dirhist_5='/home/pwn/git/shelf/hdown/.git'
+let g:netrw_dirhist_4='/home/pwn/vgu/it_dept/pentest/people/Nguyen_Minh_Quang'
+let g:netrw_dirhist_3='/home/pwn/git/dotfiles_kali/config'
+let g:netrw_dirhist_2='/home/pwn/git/KaliSetup/setup/nvim'
+let g:netrw_dirhist_1='/home/pwn/git/KaliSetup/setup'
+let g:netrw_dirhist_0='/home/pwn/git/dotfiles_kali/config/nvim'
+let g:netrw_dirhist_9='/home/pwn/git/dotfiles_kali/config'
+let g:netrw_dirhist_8='/home/pwn/git'
